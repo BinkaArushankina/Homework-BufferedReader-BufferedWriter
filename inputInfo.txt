@@ -1,0 +1,5 @@
+John, Smith, Notebook, 500
+Jill, White, Mac,      800
+John, Smith, Keyboard, 25
+Ann,  Green, Mousepad, 5
+Jill, White, Apple,    60
