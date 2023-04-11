@@ -1,5 +1,5 @@
  John Smith 500
- Jill White 1300
- John Smith 1325
- Ann Green 1330
- Jill White 1390
+ Jill White 800
+ John Smith 25
+ Ann Green 5
+ Jill White 60
