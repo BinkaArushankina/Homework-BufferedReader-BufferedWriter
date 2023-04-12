@@ -1,9 +1,6 @@
 package Homework;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Homework {
@@ -14,14 +11,14 @@ public class Homework {
         File file = new File("text.txt");
         file.createNewFile();
 
-        text(file);     //to be or not to be
+        System.out.println(text(file));     //to be or not to be
 
 
 //2. Есть  файл, состоящий из строчек текста.  Написать метод,
 //читающий файл и находящий самую длинную строчку в этом файле.
 //Метод возвращает эту строчку
 
-        longestString(file);        //not
+        System.out.println(longestString(file));        //not
 
 //3. *(со звездочкой)
 //Есть  не пустой текстовый файл, состоящий из строчек, содержащих
@@ -36,7 +33,7 @@ public class Homework {
         File fileNameAge= new File("nameAge.txt");
         fileNameAge.createNewFile();
 
-        System.out.println(adult(fileNameAge));     //[Ann, 54, Jack, 23, Jill, 19]
+        System.out.println(adult(fileNameAge));     //[name = Jill, age = 19, name = Jack, age = 23, name = Ann, age = 54]
 
 
 //4. *(со звездочкой)
@@ -69,80 +66,89 @@ public class Homework {
 
     }
   //1)
-    public static void text(File file){
-        String text;
+    public static String text(File file){
+        String text="";
 
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-            while ((text = br.readLine()) != null) {
-                System.out.print(text);
-                System.out.print(" ");
+            String line;
+            while ((line = br.readLine()) != null) {
+                text=text+" "+line;
             }
         }catch (IOException exception){
             System.out.println(exception.getMessage());
         }
+        return text.trim();
     }
 
    //2)
-    public static void longestString(File file){
-        String text;
+    public static String longestString(File file){
         String longestText="";
 
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String text;
             while ((text = br.readLine()) != null) {
                 if (text.length()>longestText.length()){
                     longestText=text;
-                    System.out.println(text);
                 }
             }
         }catch (IOException exception){
             System.out.println(exception.getMessage());
         }
+        return longestText;
     }
 
     //3)
-    public static List<String> adult(File file){
-        String text;
-        List<String> adult= new ArrayList<>();
+    public static List<Person> adult(File file){
+        List<String> persons=new ArrayList<>();
+        List<Person> adult= new ArrayList<>();
 
         try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String text;
             while ((text = br.readLine()) != null) {
-                String [] parts= text.split(",");
-                String parts1= parts[1].trim();
-                int age= Integer.parseInt(parts1);
-                if(age>=18) {
-                    adult.add(text);
-                    Collections.sort(adult);
-                }
+                persons.add(text);
             }
         }catch (IOException exception){
-            System.out.println(exception.getMessage());
+            exception.printStackTrace();
+        }
+        for(String s: persons){
+            String [] parts= s.split(",");
+            String parts1= parts[1].trim();
+            int age= Integer.parseInt(parts1);
+            if(age>=18) {
+                adult.add(new Person(parts[0].trim(),age));
+
+            }
+            Collections.sort(adult);
         }
         return adult;
     }
 
     //4)
-    public static void sum(File input, File output) throws IOException {
-        BufferedReader br = new BufferedReader(new FileReader(input));
-        String text;
-        BufferedWriter bw = new BufferedWriter(new FileWriter(output));
-        int sum=0;
+    public static void sum(File input, File output) {
+        try(BufferedReader br = new BufferedReader(new FileReader(input));
+            BufferedWriter bw = new BufferedWriter(new FileWriter(output,false))){
 
-        while ((text = br.readLine()) != null) {
-            String []parts = text.split(",");
-            String name= parts[0].trim();
-            String surname = parts[1].trim();
-            String priceInt = parts[3].trim();
-            int price =Integer.parseInt(priceInt);
-
-            if(output.equals(name) && output.equals(surname)){
-                    sum+=price;
-                    bw.write(" "+name+" "+surname+" "+sum);
-                    bw.newLine();
-            } else {
-                    bw.write(" "+name+" "+surname+" "+price);
-                    bw.newLine();
+            String text;
+            Map<String,Integer> result= new HashMap<>();
+            while ((text = br.readLine()) != null) {
+                String []parts = text.split(",");
+                String name= parts[0].trim().concat(" ").concat(parts[1].trim());
+                String priceInt = parts[3].trim();
+                int price =Integer.parseInt(priceInt);
+                if(result.containsKey(name)){
+                    int oldPrice=result.get(name);//po kljutschu name berjom value, toest ego starij price.
+                    result.put(name,price+oldPrice);
+                } else {
+                    result.put(name,price);
+                }
             }
+            for (Map.Entry<String,Integer> me: result.entrySet()) {//idem srasu po key i value
+                bw.write(me.getKey()+" "+me.getValue());
+                bw.newLine();
+            }
+        }catch (IOException e){
+            e.printStackTrace();
         }
-        bw.close();
+
     }
 }
